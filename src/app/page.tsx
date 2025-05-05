@@ -7,6 +7,7 @@ import Logo from "./components/Logo";
 import DonationPopUp from "./components/DonationPopUp";
 import Confetti from "./components/Confetti";
 import OrganizerProfile from "./components/OrganizerProfile";
+import PixPaymentModal from "./components/PixPaymentModal";
 
 export default function Home() {
   const goal = 71750;
@@ -17,6 +18,8 @@ export default function Home() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [displayedDonated, setDisplayedDonated] = useState(donated);
   const [displayedProgress, setDisplayedProgress] = useState(Math.min(100, Math.round((donated / goal) * 100)));
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [showPixModal, setShowPixModal] = useState(false);
 
   // Profiles for pop-up
   const profiles = [
@@ -88,9 +91,19 @@ export default function Home() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  const handleAmountSelect = (amount: number) => {
+    setSelectedAmount(amount);
+    setShowPixModal(true);
+  };
+
+  const handlePixModalClose = () => {
+    setShowPixModal(false);
+    setSelectedAmount(null);
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {showConfetti && <Confetti onDone={handleConfettiDone} />}
+      {showConfetti && !showPixModal && <Confetti onDone={handleConfettiDone} />}
       <DonationPopUp
         visible={showPopUp}
         profile={{ name: popUpData.name, image: popUpData.image }}
@@ -150,7 +163,8 @@ export default function Home() {
       </div>
 
       {/* Modal de doação */}
-      <DonationModal isOpen={isModalOpen} onClose={closeModal} />
+      <DonationModal isOpen={isModalOpen} onClose={closeModal} onAmountSelect={handleAmountSelect} />
+      <PixPaymentModal isOpen={showPixModal} onClose={handlePixModalClose} selectedAmount={selectedAmount} />
 
       {/* História do Samuel */}
       <div className="mb-12 text-gray-700 leading-relaxed space-y-6">
